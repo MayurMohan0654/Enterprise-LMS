@@ -67,4 +67,26 @@ public class AdminService {
             .orElseThrow(() -> new IllegalArgumentException("Admin not found with id " + id));
         adminRepository.delete(admin);
     }
+    
+    /**
+     * Authenticates an admin by username and password
+     * 
+     * @param username the username to authenticate
+     * @param password the password to verify
+     * @return the admin if authentication succeeds, null otherwise
+     */
+    public Admin authenticateAdmin(String username, String password) {
+        Optional<Admin> adminOpt = adminRepository.findByUsername(username);
+        
+        if (adminOpt.isPresent()) {
+            Admin admin = adminOpt.get();
+            if (passwordEncoder.matches(password, admin.getPassword())) {
+                // Don't return the password in the response
+                admin.setPassword(null);
+                return admin;
+            }
+        }
+        
+        return null;
+    }
 }

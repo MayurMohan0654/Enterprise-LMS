@@ -58,4 +58,40 @@ public class AdminController {
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         }
     }
+    
+    @PostMapping("/register-librarian")
+    public ResponseEntity<?> registerLibrarian(@RequestBody Admin admin) {
+        try {
+            // Ensure the role is set to Librarian
+            admin.setRole(Admin.AdminRole.Librarian);
+            
+            Admin newLibrarian = adminService.createAdmin(admin);
+            return new ResponseEntity<>(newLibrarian, HttpStatus.CREATED);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
+    }
+    
+    @PostMapping("/authenticate")
+    public ResponseEntity<?> authenticateAdmin(@RequestBody Map<String, String> credentials) {
+        try {
+            String username = credentials.get("username");
+            String password = credentials.get("password");
+            
+            if (username == null || password == null) {
+                return ResponseEntity.badRequest().body(Map.of("error", "Username and password are required"));
+            }
+            
+            Admin admin = adminService.authenticateAdmin(username, password);
+            
+            if (admin != null) {
+                return ResponseEntity.ok(admin);
+            } else {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(Map.of("error", "Invalid username or password"));
+            }
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
+    }
 }

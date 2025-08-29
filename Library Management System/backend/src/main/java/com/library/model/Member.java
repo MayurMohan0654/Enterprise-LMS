@@ -1,8 +1,8 @@
 package com.library.model;
 
 import lombok.Data;
+import jakarta.persistence.*;
 
-import javax.persistence.*;
 import java.time.LocalDate;
 import java.util.List;
 
